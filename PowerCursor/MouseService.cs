@@ -43,6 +43,7 @@ namespace PowerCursor {
 
         private void OnMouseUp(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
+                mDragWindowPosition = Point.Empty;
                 mDragInitialPoint = Point.Empty;
                 mCurrentState = State.None;
                 mDragHwnd = IntPtr.Zero;
