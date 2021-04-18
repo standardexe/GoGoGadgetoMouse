@@ -47,9 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationContext.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="KeyInterceptor.cs" />
     <Compile Include="MouseDragAction.cs" />
     <Compile Include="MouseInterceptor.cs" />
+    <Compile Include="MouseResizeAction.cs" />
     <Compile Include="MouseService.cs" />
     <Compile Include="Settings.cs">
       <SubType>Form</SubType>
