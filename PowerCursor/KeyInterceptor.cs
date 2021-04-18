@@ -55,7 +55,7 @@ namespace PowerCursor {
             if (gotHandled || nCode < 0) {
                 return WinAPI.CallNextHookEx(mHookID, nCode, wParam, lParam);
             } else {
-                return new IntPtr(0xFFFFFFFF);
+                return new IntPtr(1);
             }
         }
 

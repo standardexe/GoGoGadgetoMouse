@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace PowerCursor {
     static class WinAPI {
@@ -32,9 +34,25 @@ namespace PowerCursor {
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetParent(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT {
@@ -43,7 +61,6 @@ namespace PowerCursor {
             public int Right;
             public int Bottom;
         }
-
 
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT {
@@ -70,6 +87,9 @@ namespace PowerCursor {
         public delegate IntPtr LowLevelMouseProc(
             int nCode, IntPtr wParam, IntPtr lParam);
 
+        public delegate bool EnumWindowsProc(
+            IntPtr hWnd, IntPtr lParam);
+
         public const int WH_KEYBOARD_LL = 13;
         public const int WH_MOUSE_LL = 14;
 
@@ -91,14 +111,36 @@ namespace PowerCursor {
         public const int SWP_NOZORDER = 0x0004;
         public const int SWP_SHOWWINDOW = 0x0040;
 
+        public const int GWL_STYLE = (-16);
+
         public static IntPtr GetTopLevelHwnd(IntPtr hwnd) {
             while (true) {
+                var style = GetWindowLong(hwnd, GWL_STYLE);
                 IntPtr nextHwnd = GetParent(hwnd);
                 if (nextHwnd == IntPtr.Zero) {
                     return hwnd;
                 }
                 hwnd = nextHwnd;
             };
+        }
+
+        public static string GetWindowTitle(IntPtr hwnd) {
+            int capacity = WinAPI.GetWindowTextLength(hwnd) * 2;
+            StringBuilder stringBuilder = new StringBuilder(capacity);
+            WinAPI.GetWindowText(hwnd, stringBuilder, stringBuilder.Capacity);
+            return stringBuilder.ToString();
+        }
+
+        public static IEnumerable<IntPtr> EnumWindows() {
+            List<IntPtr> windows = new List<IntPtr>();
+            IntPtr found = IntPtr.Zero;
+
+            EnumWindows(delegate (IntPtr wnd, IntPtr param) {
+                windows.Add(wnd);
+                return true;
+            }, IntPtr.Zero);
+
+            return windows;
         }
     }
 }

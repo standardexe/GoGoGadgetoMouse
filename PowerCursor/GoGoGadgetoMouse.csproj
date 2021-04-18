@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="ApplicationContext.cs" />
     <Compile Include="KeyInterceptor.cs" />
+    <Compile Include="MouseDragAction.cs" />
     <Compile Include="MouseInterceptor.cs" />
     <Compile Include="MouseService.cs" />
     <Compile Include="Settings.cs">

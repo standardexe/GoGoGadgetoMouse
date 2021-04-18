@@ -14,11 +14,9 @@ namespace PowerCursor {
         }
 
         private bool mAltKeyPressed;
-        private Point mDragInitialPoint;
-        private Point mDragWindowPosition;
-        private IntPtr mDragHwnd;
 
         private State mCurrentState;
+        private MouseDragAction mDragAction;
 
         public static MouseService The() {
             return mInstance ?? (mInstance = new MouseService());
@@ -32,35 +30,30 @@ namespace PowerCursor {
             KeyInterceptor.The().KeyUp += OnKeyUp;
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e) {
+        private void OnMouseMove(object sender, MouseInterceptor.MouseEventArgs e) {
             if (mCurrentState == State.DragWindow) {
-                WinAPI.SetWindowPos(mDragHwnd, 0, 
-                    mDragWindowPosition.X + (e.X - mDragInitialPoint.X),
-                    mDragWindowPosition.Y + (e.Y - mDragInitialPoint.Y), 
-                    0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER);
+                mDragAction?.Update(e.Location);
             }
         }
 
-        private void OnMouseUp(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
-                mDragWindowPosition = Point.Empty;
-                mDragInitialPoint = Point.Empty;
+        private void OnMouseUp(object sender, MouseInterceptor.MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left && mCurrentState != State.None) {
                 mCurrentState = State.None;
-                mDragHwnd = IntPtr.Zero;
+                mDragAction = null;
+                e.Handled = true;
             }
         }
 
-        private void OnMouseDown(object sender, MouseEventArgs e) {
+        private void OnMouseDown(object sender, MouseInterceptor.MouseEventArgs e) {
             if (e.Button == MouseButtons.Left && mAltKeyPressed) {
-                mDragHwnd = WinAPI.GetTopLevelHwnd(WinAPI.WindowFromPoint(e.Location));
-                
-                if (!WinAPI.GetWindowRect(mDragHwnd, out var windowRect)) {
-                    Console.WriteLine($"ERROR: Could not read window rect for hwnd {mDragHwnd}!");
-                }
-                mDragWindowPosition = new Point(windowRect.Left, windowRect.Top);
+                var hwndMouseOver = WinAPI.WindowFromPoint(e.Location);
+                var topLevelHWnd = WinAPI.EnumWindows().First(hwnd =>
+                    WinAPI.IsChild(hwnd, hwndMouseOver) ||
+                    hwnd == hwndMouseOver);
 
+                mDragAction = new MouseDragAction(topLevelHWnd, e.Location);
                 mCurrentState = State.DragWindow;
-                mDragInitialPoint = e.Location;
+                e.Handled = true;
             }
         }
 
