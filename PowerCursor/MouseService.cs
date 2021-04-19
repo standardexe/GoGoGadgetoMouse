@@ -46,10 +46,12 @@ namespace PowerCursor {
         private void OnMouseUp(object sender, MouseInterceptor.MouseEventArgs e) {
             if (e.Button == MouseButtons.Left && mCurrentState == State.DragWindow) {
                 mCurrentState = State.None;
+                mDragAction.Finish(e.Location);
                 mDragAction = null;
                 e.Handled = true;
             } else if (e.Button == MouseButtons.Right && mCurrentState == State.ResizeWindow) {
                 mCurrentState = State.None;
+                mResizeAction.Finish(e.Location);
                 mResizeAction = null;
                 e.Handled = true;
             }
@@ -58,18 +60,16 @@ namespace PowerCursor {
         private void OnMouseDown(object sender, MouseInterceptor.MouseEventArgs e) {
             if (mAltKeyPressed && mCurrentState == State.None) {
                 var hwndMouseOver = WinAPI.WindowFromPoint(e.Location);
-                var topLevelHWnd = WinAPI.EnumWindows().FirstOrDefault(hwnd =>
-                    WinAPI.IsChild(hwnd, hwndMouseOver) ||
-                    hwnd == hwndMouseOver);
-
-                if (topLevelHWnd == default) return;
+                var topLevelHwnd = GetTopMostHwnd(hwndMouseOver);
+                if (topLevelHwnd == default) return;
 
                 if (e.Button == MouseButtons.Left) {
-                    mDragAction = new MouseDragAction(topLevelHWnd, e.Location);
+                    mDragAction = new MouseDragAction(topLevelHwnd, e.Location);
                     mCurrentState = State.DragWindow;
                     e.Handled = true;
+
                 } else if (e.Button == MouseButtons.Right) {
-                    mResizeAction = new MouseResizeAction(topLevelHWnd, e.Location);
+                    mResizeAction = new MouseResizeAction(topLevelHwnd, e.Location);
                     mCurrentState = State.ResizeWindow;
                     e.Handled = true;
                 }
@@ -86,6 +86,12 @@ namespace PowerCursor {
             if (e.KeyCode == Keys.LMenu) {
                 mAltKeyPressed = false;
             }
+        }
+
+        private static IntPtr GetTopMostHwnd(IntPtr hwnd) {
+            return WinAPI.EnumWindows().FirstOrDefault(topLevelHwnd =>
+                WinAPI.IsChild(topLevelHwnd, hwnd) ||
+                topLevelHwnd == hwnd);
         }
     }
 }

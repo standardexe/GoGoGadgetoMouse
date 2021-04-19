@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace PowerCursor {
     class MouseDragAction {
         private readonly IntPtr mHwnd;
         private readonly Point mInitialWindowPosition;
         private readonly Point mInitialMousePosition;
+        private readonly InvisibleWindow mInvisibleWindow;
 
         public MouseDragAction(IntPtr hwnd, Point initialMousePosition) {
             mHwnd = hwnd;
             mInitialMousePosition = initialMousePosition;
 
-            // TODO: look into DwmGetWindowAttribute to get coordinates
-            // without drop shadow and not adjusted for DPI
             if (!WinAPI.GetWindowRect(hwnd, out var windowRect)) {
-                throw new InvalidOperationException($"Could not get window rect of window {hwnd}");
+                throw new InvalidOperationException(
+                    $"Could not get window rect of window {hwnd}");
             }
 
             mInitialWindowPosition = new Point(windowRect.Left, windowRect.Top);
+
+            mInvisibleWindow = new InvisibleWindow();
+            mInvisibleWindow.Show();
+            mInvisibleWindow.CenterAt(initialMousePosition);
+            mInvisibleWindow.Cursor = Cursors.Hand;
         }
 
         public void Update(Point currentMousePosition) {
@@ -29,7 +35,13 @@ namespace PowerCursor {
             WinAPI.SetWindowPos(mHwnd, 0,
                 mInitialWindowPosition.X + deltaX,
                 mInitialWindowPosition.Y + deltaY,
-                0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER | WinAPI.SWP_SHOWWINDOW);
+                0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER);
+
+            mInvisibleWindow.CenterAt(currentMousePosition);
+        }
+
+        public void Finish(Point currentMousePosition) {
+            mInvisibleWindow.Hide();
         }
     }
 }

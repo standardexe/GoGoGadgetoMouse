@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PowerCursor {
     class MouseResizeAction {
@@ -29,10 +30,25 @@ namespace PowerCursor {
                 [ResizeMode.Bottom] = new RectangleF(0, 1 - SideSize, 1, SideSize),
             };
 
+        private readonly Dictionary<ResizeMode, Cursor> mCursors
+            = new Dictionary<ResizeMode, Cursor> {
+                [ResizeMode.All] = Cursors.SizeAll,
+                [ResizeMode.Left] = Cursors.SizeWE,
+                [ResizeMode.Right] = Cursors.SizeWE,
+                [ResizeMode.Top] = Cursors.SizeNS,
+                [ResizeMode.Bottom] = Cursors.SizeNS,
+                [ResizeMode.TopLeft] = Cursors.SizeNWSE,
+                [ResizeMode.BottomRight] = Cursors.SizeNWSE,
+                [ResizeMode.TopRight] = Cursors.SizeNESW,
+                [ResizeMode.BottomLeft] = Cursors.SizeNESW,
+            };
+
         private readonly Rectangle mInitialWindowRect;
         private readonly Point mInitialMousePosition;
         private readonly ResizeMode mResizeMode;
         private readonly IntPtr mHwnd;
+
+        private readonly InvisibleWindow mInvisibleWindow;
 
         public MouseResizeAction(IntPtr hwnd, Point initialMousePosition) {
             mInitialMousePosition = initialMousePosition;
@@ -56,6 +72,11 @@ namespace PowerCursor {
             } else {
                 mResizeMode = ResizeMode.All;
             }
+
+            mInvisibleWindow = new InvisibleWindow();
+            mInvisibleWindow.Show();
+            mInvisibleWindow.CenterAt(initialMousePosition);
+            mInvisibleWindow.Cursor = mCursors[mResizeMode];
         }
 
         public void Update(Point currentMousePosition) {
@@ -137,6 +158,10 @@ namespace PowerCursor {
                 newWindowRect.Width,
                 newWindowRect.Height,
                 WinAPI.SWP_NOZORDER);
+        }
+
+        public void Finish(Point currentMousePosition) {
+            mInvisibleWindow.Hide();
         }
     }
 }
