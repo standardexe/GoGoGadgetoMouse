@@ -58,9 +58,11 @@ namespace PowerCursor {
         private void OnMouseDown(object sender, MouseInterceptor.MouseEventArgs e) {
             if (mAltKeyPressed && mCurrentState == State.None) {
                 var hwndMouseOver = WinAPI.WindowFromPoint(e.Location);
-                var topLevelHWnd = WinAPI.EnumWindows().First(hwnd =>
+                var topLevelHWnd = WinAPI.EnumWindows().FirstOrDefault(hwnd =>
                     WinAPI.IsChild(hwnd, hwndMouseOver) ||
                     hwnd == hwndMouseOver);
+
+                if (topLevelHWnd == default) return;
 
                 if (e.Button == MouseButtons.Left) {
                     mDragAction = new MouseDragAction(topLevelHWnd, e.Location);

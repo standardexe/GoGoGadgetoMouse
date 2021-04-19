@@ -47,12 +47,21 @@ namespace PowerCursor {
         [DllImport("user32.dll", SetLastError = true)]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
         private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
 
+        [DllImport("Shcore.dll")]
+        public static extern int SetProcessDpiAwareness(
+            [MarshalAs(UnmanagedType.I4)] DpiAwareness PROCESS_DPI_AWARENESS);
+
+        public enum DpiAwareness {
+            None = 0,
+            SystemAware = 1,
+            PerMonitorAware = 2
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT {

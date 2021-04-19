@@ -18,16 +18,16 @@ namespace PowerCursor {
 
         private readonly Dictionary<ResizeMode, RectangleF> mAreas
             = new Dictionary<ResizeMode, RectangleF> {
-            [ResizeMode.TopLeft]     = new RectangleF(0, 0, CornerSize, CornerSize),
-            [ResizeMode.TopRight]    = new RectangleF(1 - CornerSize, 0, CornerSize, CornerSize),
-            [ResizeMode.BottomLeft]  = new RectangleF(0, 1 - CornerSize, CornerSize, CornerSize),
-            [ResizeMode.BottomRight] = new RectangleF(1 - CornerSize, 1 - CornerSize, CornerSize, CornerSize),
+                [ResizeMode.TopLeft] = new RectangleF(0, 0, CornerSize, CornerSize),
+                [ResizeMode.TopRight] = new RectangleF(1 - CornerSize, 0, CornerSize, CornerSize),
+                [ResizeMode.BottomLeft] = new RectangleF(0, 1 - CornerSize, CornerSize, CornerSize),
+                [ResizeMode.BottomRight] = new RectangleF(1 - CornerSize, 1 - CornerSize, CornerSize, CornerSize),
 
-            [ResizeMode.Left]        = new RectangleF(0, 0, SideSize, 1),
-            [ResizeMode.Top]         = new RectangleF(0, 0, 1, SideSize),
-            [ResizeMode.Right]       = new RectangleF(1 - SideSize, 0, SideSize, 1),
-            [ResizeMode.Bottom]      = new RectangleF(0, 1 - SideSize, 1, SideSize),
-        };
+                [ResizeMode.Left] = new RectangleF(0, 0, SideSize, 1),
+                [ResizeMode.Top] = new RectangleF(0, 0, 1, SideSize),
+                [ResizeMode.Right] = new RectangleF(1 - SideSize, 0, SideSize, 1),
+                [ResizeMode.Bottom] = new RectangleF(0, 1 - SideSize, 1, SideSize),
+            };
 
         private readonly Rectangle mInitialWindowRect;
         private readonly Point mInitialMousePosition;
