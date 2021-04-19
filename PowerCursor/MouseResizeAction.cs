@@ -80,6 +80,8 @@ namespace PowerCursor {
         }
 
         public void Update(Point currentMousePosition) {
+            mInvisibleWindow.CenterAt(currentMousePosition);
+
             var deltaX = currentMousePosition.X - mInitialMousePosition.X;
             var deltaY = currentMousePosition.Y - mInitialMousePosition.Y;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -15,6 +14,7 @@ namespace PowerCursor {
         }
 
         private bool mAltKeyPressed;
+        private bool mAltKeyUsed;
 
         private State mCurrentState;
         private MouseDragAction mDragAction;
@@ -66,11 +66,13 @@ namespace PowerCursor {
                 if (e.Button == MouseButtons.Left) {
                     mDragAction = new MouseDragAction(topLevelHwnd, e.Location);
                     mCurrentState = State.DragWindow;
+                    mAltKeyUsed = true;
                     e.Handled = true;
 
                 } else if (e.Button == MouseButtons.Right) {
                     mResizeAction = new MouseResizeAction(topLevelHwnd, e.Location);
                     mCurrentState = State.ResizeWindow;
+                    mAltKeyUsed = true;
                     e.Handled = true;
                 }
             }
@@ -85,6 +87,7 @@ namespace PowerCursor {
         private void OnKeyUp(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.LMenu) {
                 mAltKeyPressed = false;
+                mAltKeyUsed = false;
             }
         }
 

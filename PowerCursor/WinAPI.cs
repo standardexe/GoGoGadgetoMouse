@@ -102,6 +102,9 @@ namespace PowerCursor {
         public const int WH_KEYBOARD_LL = 13;
         public const int WH_MOUSE_LL = 14;
 
+        public const int LLKHF_INJECTED = 0x0010;
+        public const int LLKHF_LOWER_IL_INJECTED = 0x0002;
+
         public const int WM_KEYDOWN = 0x0100;
         public const int WM_KEYUP = 0x0101;
         public const int WM_SYSKEYDOWN = 0x0104;

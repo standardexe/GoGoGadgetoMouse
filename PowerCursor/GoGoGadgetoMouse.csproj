@@ -51,6 +51,7 @@
     <Compile Include="InvisibleWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="KeyboardInput.cs" />
     <Compile Include="KeyInterceptor.cs" />
     <Compile Include="MouseDragAction.cs" />
     <Compile Include="MouseInterceptor.cs" />

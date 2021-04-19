@@ -41,14 +41,19 @@ namespace PowerCursor {
 
             if (nCode >= 0) {
                 Keys vkCode = (Keys)Marshal.ReadInt32(lParam);
-                if ((int)wParam == WinAPI.WM_KEYDOWN || (int)wParam == WinAPI.WM_SYSKEYDOWN) {
-                    var ev = new KeyEventArgs(vkCode);
-                    The().KeyDown?.Invoke(The(), ev);
-                    gotHandled = !ev.Handled;
-                } else if ((int)wParam == WinAPI.WM_KEYUP || (int)wParam == WinAPI.WM_SYSKEYUP) {
-                    var ev = new KeyEventArgs(vkCode);
-                    The().KeyUp?.Invoke(The(), ev);
-                    gotHandled = !ev.Handled;
+                int keyFlags = Marshal.ReadInt32(lParam + 8);
+                bool isKeyInjected = (keyFlags & WinAPI.LLKHF_INJECTED) > 0;
+
+                if (!isKeyInjected) {
+                    if ((int)wParam == WinAPI.WM_KEYDOWN || (int)wParam == WinAPI.WM_SYSKEYDOWN) {
+                        var ev = new KeyEventArgs(vkCode);
+                        The().KeyDown?.Invoke(The(), ev);
+                        gotHandled = !ev.Handled;
+                    } else if ((int)wParam == WinAPI.WM_KEYUP || (int)wParam == WinAPI.WM_SYSKEYUP) {
+                        var ev = new KeyEventArgs(vkCode);
+                        The().KeyUp?.Invoke(The(), ev);
+                        gotHandled = !ev.Handled;
+                    }
                 }
             }
 
