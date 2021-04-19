@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace GoGoGadgetoMouse {
@@ -62,6 +63,12 @@ namespace GoGoGadgetoMouse {
                 var hwndMouseOver = WinAPI.WindowFromPoint(e.Location);
                 var topLevelHwnd = GetTopMostHwnd(hwndMouseOver);
                 if (topLevelHwnd == default) return;
+
+                var windowText = WinAPI.GetWindowTitle(topLevelHwnd);
+                if (Properties.Settings.Default.excludes.ToEnumerable().Any(
+                    exclude => Regex.IsMatch(windowText, exclude))) {
+                    return;
+                }
 
                 if (e.Button == MouseButtons.Left) {
                     mDragAction = new MouseDragAction(topLevelHwnd, e.Location);

@@ -14,22 +14,6 @@ namespace GoGoGadgetoMouse {
             All
         }
 
-        private const float CornerSize = 0.3f;
-        private const float SideSize = 0.3f;
-
-        private static readonly Dictionary<ResizeMode, RectangleF> Areas
-            = new Dictionary<ResizeMode, RectangleF> {
-                [ResizeMode.TopLeft] = new RectangleF(0, 0, CornerSize, CornerSize),
-                [ResizeMode.TopRight] = new RectangleF(1 - CornerSize, 0, CornerSize, CornerSize),
-                [ResizeMode.BottomLeft] = new RectangleF(0, 1 - CornerSize, CornerSize, CornerSize),
-                [ResizeMode.BottomRight] = new RectangleF(1 - CornerSize, 1 - CornerSize, CornerSize, CornerSize),
-
-                [ResizeMode.Left] = new RectangleF(0, 0, SideSize, 1),
-                [ResizeMode.Top] = new RectangleF(0, 0, 1, SideSize),
-                [ResizeMode.Right] = new RectangleF(1 - SideSize, 0, SideSize, 1),
-                [ResizeMode.Bottom] = new RectangleF(0, 1 - SideSize, 1, SideSize),
-            };
-
         public static readonly Dictionary<ResizeMode, Cursor> Cursors
             = new Dictionary<ResizeMode, Cursor> {
                 [ResizeMode.All] = System.Windows.Forms.Cursors.SizeAll,
@@ -58,6 +42,9 @@ namespace GoGoGadgetoMouse {
                 throw new InvalidOperationException($"Could not get window rect of window {hwnd}");
             }
 
+            var cornerSize = Properties.Settings.Default.sideWidth / 2;
+            var sideSize = cornerSize;
+
             mInitialWindowRect = new Rectangle(
                 rect.Left, rect.Top,
                 rect.Right - rect.Left,
@@ -67,7 +54,19 @@ namespace GoGoGadgetoMouse {
                 (initialMousePosition.X - mInitialWindowRect.X) / (float)mInitialWindowRect.Width,
                 (initialMousePosition.Y - mInitialWindowRect.Y) / (float)mInitialWindowRect.Height);
 
-            if (Areas.TryFirstOrDefault(kvp => kvp.Value.Contains(normalizedMousePos), out var areaKvp)) {
+            var areas = new Dictionary<ResizeMode, RectangleF> {
+                [ResizeMode.TopLeft] = new RectangleF(0, 0, cornerSize, cornerSize),
+                [ResizeMode.TopRight] = new RectangleF(1 - cornerSize, 0, cornerSize, cornerSize),
+                [ResizeMode.BottomLeft] = new RectangleF(0, 1 - cornerSize, cornerSize, cornerSize),
+                [ResizeMode.BottomRight] = new RectangleF(1 - cornerSize, 1 - cornerSize, cornerSize, cornerSize),
+
+                [ResizeMode.Left] = new RectangleF(0, 0, sideSize, 1),
+                [ResizeMode.Top] = new RectangleF(0, 0, 1, sideSize),
+                [ResizeMode.Right] = new RectangleF(1 - sideSize, 0, sideSize, 1),
+                [ResizeMode.Bottom] = new RectangleF(0, 1 - sideSize, 1, sideSize),
+            };
+
+            if (areas.TryFirstOrDefault(kvp => kvp.Value.Contains(normalizedMousePos), out var areaKvp)) {
                 mResizeMode = areaKvp.Key;
             } else {
                 mResizeMode = ResizeMode.All;
