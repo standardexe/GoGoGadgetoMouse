@@ -18,10 +18,12 @@ namespace GoGoGadgetoMouse {
                 }),
                 Visible = true
             };
+
+            mTrayIcon.DoubleClick += (o, e) => Settings(o, e);
         }
 
         void Settings(object sender, EventArgs e) {
-            Settings settings = new Settings();
+            SettingsWindow settings = new SettingsWindow();
             settings.ShowDialog();
         }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace GoGoGadgetoMouse
 {
-    partial class Settings
+    partial class SettingsWindow
     {
         /// <summary>
         /// Erforderliche Designervariable.
@@ -36,14 +36,14 @@ namespace GoGoGadgetoMouse
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPageLists = new System.Windows.Forms.TabPage();
+            this.buttonChangeExclude = new System.Windows.Forms.Button();
             this.buttonRemoveExclude = new System.Windows.Forms.Button();
             this.buttonAddExclude = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listBoxExclusions = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPageResizer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSideWidth)).BeginInit();
@@ -129,11 +129,11 @@ namespace GoGoGadgetoMouse
             // 
             // tabPageLists
             // 
-            this.tabPageLists.Controls.Add(this.button1);
+            this.tabPageLists.Controls.Add(this.buttonChangeExclude);
             this.tabPageLists.Controls.Add(this.buttonRemoveExclude);
             this.tabPageLists.Controls.Add(this.buttonAddExclude);
             this.tabPageLists.Controls.Add(this.label1);
-            this.tabPageLists.Controls.Add(this.listBox1);
+            this.tabPageLists.Controls.Add(this.listBoxExclusions);
             this.tabPageLists.Location = new System.Drawing.Point(4, 22);
             this.tabPageLists.Name = "tabPageLists";
             this.tabPageLists.Padding = new System.Windows.Forms.Padding(3);
@@ -142,15 +142,27 @@ namespace GoGoGadgetoMouse
             this.tabPageLists.Text = "Excludes";
             this.tabPageLists.UseVisualStyleBackColor = true;
             // 
+            // buttonChangeExclude
+            // 
+            this.buttonChangeExclude.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonChangeExclude.Location = new System.Drawing.Point(437, 77);
+            this.buttonChangeExclude.Name = "buttonChangeExclude";
+            this.buttonChangeExclude.Size = new System.Drawing.Size(163, 36);
+            this.buttonChangeExclude.TabIndex = 4;
+            this.buttonChangeExclude.Text = "Change selected...";
+            this.buttonChangeExclude.UseVisualStyleBackColor = true;
+            this.buttonChangeExclude.Click += new System.EventHandler(this.buttonChangeExclude_Click);
+            // 
             // buttonRemoveExclude
             // 
             this.buttonRemoveExclude.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRemoveExclude.Location = new System.Drawing.Point(437, 121);
+            this.buttonRemoveExclude.Location = new System.Drawing.Point(437, 119);
             this.buttonRemoveExclude.Name = "buttonRemoveExclude";
             this.buttonRemoveExclude.Size = new System.Drawing.Size(163, 36);
             this.buttonRemoveExclude.TabIndex = 3;
             this.buttonRemoveExclude.Text = "Remove selected";
             this.buttonRemoveExclude.UseVisualStyleBackColor = true;
+            this.buttonRemoveExclude.Click += new System.EventHandler(this.buttonRemoveExclude_Click);
             // 
             // buttonAddExclude
             // 
@@ -161,6 +173,7 @@ namespace GoGoGadgetoMouse
             this.buttonAddExclude.TabIndex = 2;
             this.buttonAddExclude.Text = "Add new...";
             this.buttonAddExclude.UseVisualStyleBackColor = true;
+            this.buttonAddExclude.Click += new System.EventHandler(this.buttonAddExclude_Click);
             // 
             // label1
             // 
@@ -172,16 +185,16 @@ namespace GoGoGadgetoMouse
             this.label1.TabIndex = 1;
             this.label1.Text = "Exclude window names:";
             // 
-            // listBox1
+            // listBoxExclusions
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.listBoxExclusions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(8, 35);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(423, 251);
-            this.listBox1.TabIndex = 0;
+            this.listBoxExclusions.FormattingEnabled = true;
+            this.listBoxExclusions.Location = new System.Drawing.Point(8, 35);
+            this.listBoxExclusions.Name = "listBoxExclusions";
+            this.listBoxExclusions.Size = new System.Drawing.Size(423, 251);
+            this.listBoxExclusions.TabIndex = 0;
             // 
             // panel1
             // 
@@ -215,17 +228,7 @@ namespace GoGoGadgetoMouse
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(437, 77);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(163, 36);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Change selected...";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // Settings
+            // SettingsWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,9 +239,11 @@ namespace GoGoGadgetoMouse
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.Name = "Settings";
+            this.Name = "SettingsWindow";
             this.ShowIcon = false;
             this.Text = "Settings - GoGoGadgetoMouse";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsWindow_FormClosing);
+            this.Shown += new System.EventHandler(this.SettingsWindow_Shown);
             this.tabControl.ResumeLayout(false);
             this.tabPageResizer.ResumeLayout(false);
             this.tabPageResizer.PerformLayout();
@@ -258,7 +263,7 @@ namespace GoGoGadgetoMouse
         private System.Windows.Forms.TabPage tabPageLists;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox listBoxExclusions;
         private System.Windows.Forms.Button buttonRemoveExclude;
         private System.Windows.Forms.Button buttonAddExclude;
         private System.Windows.Forms.Button buttonOK;
@@ -267,7 +272,7 @@ namespace GoGoGadgetoMouse
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelPercent;
         private System.Windows.Forms.NumericUpDown numericUpDownSideWidth;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonChangeExclude;
     }
 }
 
