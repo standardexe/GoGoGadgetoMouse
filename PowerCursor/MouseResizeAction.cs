@@ -15,7 +15,7 @@ namespace GoGoGadgetoMouse {
         }
 
         private const float CornerSize = 0.3f;
-        private const float SideSize = 0.2f;
+        private const float SideSize = 0.3f;
 
         private readonly Dictionary<ResizeMode, RectangleF> mAreas
             = new Dictionary<ResizeMode, RectangleF> {
