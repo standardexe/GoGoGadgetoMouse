@@ -1,5 +1,5 @@
 ﻿
-namespace PowerCursor
+namespace GoGoGadgetoMouse
 {
     partial class Settings
     {

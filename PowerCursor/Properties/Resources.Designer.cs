@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PowerCursor.Properties {
+namespace GoGoGadgetoMouse.Properties {
     using System;
     
     

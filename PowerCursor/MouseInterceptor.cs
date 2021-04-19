@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     class MouseInterceptor {
         public class MouseEventArgs : System.Windows.Forms.MouseEventArgs {
             public MouseEventArgs(MouseButtons buttons, int x, int y) 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     static class Extensions {
         public static bool TryFirstOrDefault<T,U>(
             this Dictionary<T,U> source,

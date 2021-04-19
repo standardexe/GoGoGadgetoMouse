@@ -1,8 +1,8 @@
-﻿using PowerCursor.Properties;
+﻿using GoGoGadgetoMouse.Properties;
 using System;
 using System.Windows.Forms;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     public class ApplicationContext : System.Windows.Forms.ApplicationContext {
         private readonly NotifyIcon mTrayIcon;
         private readonly MouseService mMouseService;

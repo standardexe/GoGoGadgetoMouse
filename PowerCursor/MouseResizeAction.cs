@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     class MouseResizeAction {
         private enum ResizeMode {
             Left, Top, Right, Bottom,

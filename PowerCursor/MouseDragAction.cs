@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     class MouseDragAction {
         private readonly IntPtr mHwnd;
         private readonly Point mInitialWindowPosition;

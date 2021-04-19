@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerCursor {
+namespace GoGoGadgetoMouse {
     public class Keyboard {
         public static void Send(ScanCodeShort a) {
             INPUT[] Inputs = new INPUT[1];
