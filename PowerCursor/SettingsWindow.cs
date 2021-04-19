@@ -14,6 +14,9 @@ namespace GoGoGadgetoMouse {
             InitializeComponent();
         }
 
+        // ###########################################################
+        // PAGE resizing
+
         public void DrawResizers(Graphics g, float sidePercent) {
             var width = g.VisibleClipBounds.Width;
             var height = g.VisibleClipBounds.Height;
@@ -27,31 +30,15 @@ namespace GoGoGadgetoMouse {
             g.FillRectangle(Brushes.AliceBlue, width - sideWidth, 0, sideWidth, height);
             g.FillRectangle(Brushes.AliceBlue, 0, height - sideHeight, width, sideHeight);
 
-            g.DrawLine(Pens.DarkGray, 0, sideHeight, width, sideHeight);
-            g.DrawLine(Pens.DarkGray, 0, height - sideHeight, width, height - sideHeight);
-            g.DrawLine(Pens.DarkGray, sideWidth, 0, sideWidth, height);
-            g.DrawLine(Pens.DarkGray, width - sideWidth, 0, width - sideWidth, height);
-
             g.FillRectangle(Brushes.LightBlue, 0, 0, sideWidth, sideHeight);
             g.FillRectangle(Brushes.LightBlue, width  - sideWidth, 0, sideWidth, sideHeight);
             g.FillRectangle(Brushes.LightBlue, 0, height - sideHeight, sideWidth, sideHeight);
             g.FillRectangle(Brushes.LightBlue, width - sideWidth, height - sideHeight, sideWidth, sideHeight);
-        }
 
-        private void pictureBox1_Paint(object sender, PaintEventArgs e) {
-            DrawResizers(e.Graphics, (float)numericUpDownSideWidth.Value / 100f);
-        }
-
-        private void pictureBox1_Resize(object sender, EventArgs e) {
-            pictureBox1.Invalidate();
-        }
-
-        private void numericUpDownSideWidth_ValueChanged(object sender, EventArgs e) {
-            pictureBox1.Invalidate();
-        }
-
-        private void numericUpDownsideWidth_ValueChanged(object sender, EventArgs e) {
-            pictureBox1.Invalidate();
+            g.DrawLine(Pens.DarkGray, 0, sideHeight, width, sideHeight);
+            g.DrawLine(Pens.DarkGray, 0, height - sideHeight, width, height - sideHeight);
+            g.DrawLine(Pens.DarkGray, sideWidth, 0, sideWidth, height);
+            g.DrawLine(Pens.DarkGray, width - sideWidth, 0, width - sideWidth, height);
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
@@ -81,6 +68,25 @@ namespace GoGoGadgetoMouse {
             pictureBox1.Cursor = cursor;
         }
 
+        private void pictureBox1_Paint(object sender, PaintEventArgs e) {
+            DrawResizers(e.Graphics, (float)numericUpDownSideWidth.Value / 100f);
+        }
+
+        private void pictureBox1_Resize(object sender, EventArgs e) {
+            pictureBox1.Invalidate();
+        }
+
+        private void numericUpDownSideWidth_ValueChanged(object sender, EventArgs e) {
+            pictureBox1.Invalidate();
+        }
+
+        private void numericUpDownsideWidth_ValueChanged(object sender, EventArgs e) {
+            pictureBox1.Invalidate();
+        }
+
+        // ###########################################################
+        // PAGE excludes
+
         private void buttonAddExclude_Click(object sender, EventArgs e) {
             var result = Microsoft.VisualBasic.Interaction.InputBox(
                 "Input window name to exlude (Regex):", "Exclude window");
@@ -88,9 +94,20 @@ namespace GoGoGadgetoMouse {
             listBoxExclusions.Items.Add(result);
         }
 
-        private void SettingsWindow_Shown(object sender, EventArgs e) {
-            LoadSettings();
+        private void buttonChangeExclude_Click(object sender, EventArgs e) {
+            var result = Microsoft.VisualBasic.Interaction.InputBox(
+                "Change window name (Regex allowed):", "Exclude window",
+                (string)listBoxExclusions.SelectedItem);
+
+            listBoxExclusions.Items[listBoxExclusions.SelectedIndex] = result;
         }
+
+        private void buttonRemoveExclude_Click(object sender, EventArgs e) {
+            listBoxExclusions.Items.RemoveAt(listBoxExclusions.SelectedIndex);
+        }
+
+        // ###########################################################
+        // others
 
         private void SaveSettings() {
             Properties.Settings.Default.sideWidth =
@@ -120,16 +137,8 @@ namespace GoGoGadgetoMouse {
                     .ToArray());
         }
 
-        private void buttonChangeExclude_Click(object sender, EventArgs e) {
-            var result = Microsoft.VisualBasic.Interaction.InputBox(
-                "Change window name (Regex allowed):", "Exclude window",
-                (string)listBoxExclusions.SelectedItem);
-
-            listBoxExclusions.Items[listBoxExclusions.SelectedIndex] = result;
-        }
-
-        private void buttonRemoveExclude_Click(object sender, EventArgs e) {
-            listBoxExclusions.Items.RemoveAt(listBoxExclusions.SelectedIndex);
+        private void SettingsWindow_Shown(object sender, EventArgs e) {
+            LoadSettings();
         }
 
         private void SettingsWindow_FormClosing(object sender, FormClosingEventArgs e) {
