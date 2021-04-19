@@ -13,10 +13,16 @@ namespace GoGoGadgetoMouse {
             mTrayIcon = new NotifyIcon() {
                 Icon = Resources.MouseIcon,
                 ContextMenu = new ContextMenu(new MenuItem[] {
-                new MenuItem("Exit", Exit)
-            }),
+                    new MenuItem("Settings", Settings),
+                    new MenuItem("Exit", Exit)
+                }),
                 Visible = true
             };
+        }
+
+        void Settings(object sender, EventArgs e) {
+            Settings settings = new Settings();
+            settings.ShowDialog();
         }
 
         void Exit(object sender, EventArgs e) {
