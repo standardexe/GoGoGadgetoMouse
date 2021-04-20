@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D4F32FCF-94F5-40D3-BF5F-3C088EB4040D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>PowerCursor</RootNamespace>
-    <AssemblyName>PowerCursor</AssemblyName>
+    <RootNamespace>GoGoGadgetoMouse</RootNamespace>
+    <AssemblyName>GoGoGadgetoMouse</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
