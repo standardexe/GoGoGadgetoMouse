@@ -57,6 +57,15 @@ namespace GoGoGadgetoMouse {
         public static extern int SetProcessDpiAwareness(
             [MarshalAs(UnmanagedType.I4)] DpiAwareness PROCESS_DPI_AWARENESS);
 
+        [DllImport("user32.dll")]
+        public static extern UIntPtr GetMessageExtraInfo();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr SetFocus(IntPtr hwnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetFocus();
+
         public enum DpiAwareness {
             None = 0,
             SystemAware = 1,

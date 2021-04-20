@@ -20,6 +20,7 @@ namespace GoGoGadgetoMouse {
         private State mCurrentState;
         private MouseDragAction mDragAction;
         private MouseResizeAction mResizeAction;
+        private WindowsInput.InputSimulator inputSim = new WindowsInput.InputSimulator();
 
         public static MouseService The() {
             return mInstance ?? (mInstance = new MouseService());
@@ -88,11 +89,16 @@ namespace GoGoGadgetoMouse {
         private void OnKeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.LMenu) {
                 mAltKeyPressed = true;
+            } else if (mAltKeyPressed && !mAltKeyUsed) {
+                mAltKeyPressed = false;
             }
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.LMenu) {
+                if (mAltKeyUsed) {
+                    inputSim.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.CONTROL);
+                }
                 mAltKeyPressed = false;
                 mAltKeyUsed = false;
             }

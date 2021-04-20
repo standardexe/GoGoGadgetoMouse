@@ -48,16 +48,16 @@ namespace GoGoGadgetoMouse {
                     if ((int)wParam == WinAPI.WM_KEYDOWN || (int)wParam == WinAPI.WM_SYSKEYDOWN) {
                         var ev = new KeyEventArgs(vkCode);
                         The().KeyDown?.Invoke(The(), ev);
-                        gotHandled = !ev.Handled;
+                        gotHandled = ev.Handled;
                     } else if ((int)wParam == WinAPI.WM_KEYUP || (int)wParam == WinAPI.WM_SYSKEYUP) {
                         var ev = new KeyEventArgs(vkCode);
                         The().KeyUp?.Invoke(The(), ev);
-                        gotHandled = !ev.Handled;
+                        gotHandled = ev.Handled;
                     }
                 }
             }
 
-            if (gotHandled || nCode < 0) {
+            if (!gotHandled || nCode < 0) {
                 return WinAPI.CallNextHookEx(mHookID, nCode, wParam, lParam);
             } else {
                 return new IntPtr(1);
