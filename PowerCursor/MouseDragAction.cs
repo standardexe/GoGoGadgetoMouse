@@ -22,12 +22,12 @@ namespace GoGoGadgetoMouse {
 
             mInitialWindowPosition = new Point(windowRect.Left, windowRect.Top);
 
-            IntPtr focusedHwnd = WinAPI.GetFocus();
+            //IntPtr focusedHwnd = WinAPI.GetFocus();
             mInvisibleWindow = new InvisibleWindow();
             mInvisibleWindow.Show();
             mInvisibleWindow.CenterAt(initialMousePosition);
             mInvisibleWindow.Cursor = Cursors.Hand;
-            WinAPI.SetFocus(focusedHwnd);
+            //WinAPI.SetFocus(focusedHwnd);
         }
 
         public void Update(Point currentMousePosition) {

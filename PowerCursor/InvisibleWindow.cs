@@ -14,6 +14,8 @@ namespace GoGoGadgetoMouse {
             Width = 100;
         }
 
+        protected override bool ShowWithoutActivation => true;
+
         public void CenterAt(Point location) {
             Location = new Point(location.X - Width / 2, location.Y - Height / 2);
         }
