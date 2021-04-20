@@ -11,7 +11,8 @@ namespace GoGoGadgetoMouse {
         private enum State {
             None,
             DragWindow,
-            ResizeWindow
+            ResizeWindow,
+            OnTopWindow
         }
 
         private bool mAltKeyPressed;
@@ -56,6 +57,9 @@ namespace GoGoGadgetoMouse {
                 mResizeAction.Finish(e.Location);
                 mResizeAction = null;
                 e.Handled = true;
+            } else if (e.Button == MouseButtons.Middle && mCurrentState == State.OnTopWindow) {
+                mCurrentState = State.None;
+                e.Handled = true;
             }
         }
 
@@ -77,6 +81,12 @@ namespace GoGoGadgetoMouse {
                     mAltKeyUsed = true;
                     e.Handled = true;
 
+                } else if (e.Button == MouseButtons.Middle) {
+                    mCurrentState = State.OnTopWindow;
+                    mAltKeyUsed = true;
+                    e.Handled = true;
+                    ToggleTopmost(topLevelHwnd);
+
                 } else if (e.Button == MouseButtons.Right) {
                     mResizeAction = new MouseResizeAction(topLevelHwnd, e.Location);
                     mCurrentState = State.ResizeWindow;
@@ -84,6 +94,16 @@ namespace GoGoGadgetoMouse {
                     e.Handled = true;
                 }
             }
+        }
+
+        private static void ToggleTopmost(IntPtr hwnd) {
+            WinAPI.SetWindowPos(
+                hwnd,
+                WinAPI.IsWindowTopMost(hwnd)
+                    ? WinAPI.HWND_NOTOPMOST
+                    : WinAPI.HWND_TOPMOST,
+                0, 0, 0, 0,
+                WinAPI.SWP_NOMOVE | WinAPI.SWP_NOSIZE);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e) {

@@ -108,6 +108,9 @@ namespace GoGoGadgetoMouse {
         public delegate bool EnumWindowsProc(
             IntPtr hWnd, IntPtr lParam);
 
+        public const int GWL_EXSTYLE = -20;
+        public const int WS_EX_TOPMOST = 0x0008;
+
         public const int WH_KEYBOARD_LL = 13;
         public const int WH_MOUSE_LL = 14;
 
@@ -123,14 +126,17 @@ namespace GoGoGadgetoMouse {
 
         public const int WM_LBUTTONDOWN = 0x0201;
         public const int WM_LBUTTONUP = 0x0202;
-
         public const int WM_RBUTTONDOWN = 0x0204;
         public const int WM_RBUTTONUP = 0x0205;
+        public const int WM_MBUTTONDOWN = 0x0207;
+        public const int WM_MBUTTONUP = 0x0208;
 
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOZORDER = 0x0004;
         public const int SWP_SHOWWINDOW = 0x0040;
+        public const int HWND_TOPMOST = -1;
+        public const int HWND_NOTOPMOST = -2;
 
         public const int GWL_STYLE = (-16);
 
@@ -162,6 +168,11 @@ namespace GoGoGadgetoMouse {
             }, IntPtr.Zero);
 
             return windows;
+        }
+
+        public static bool IsWindowTopMost(IntPtr hWnd) {
+            int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+            return (exStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
         }
     }
 }

@@ -66,12 +66,18 @@ namespace GoGoGadgetoMouse {
                 } else if ((int)wParam == WinAPI.WM_RBUTTONDOWN) {
                     mButtons |= MouseButtons.Right;
                     gotHandled = handleEvent(The().MouseDown, MouseButtons.Right, mx, my);
+                } else if ((int)wParam == WinAPI.WM_MBUTTONDOWN) {
+                    mButtons |= MouseButtons.Middle;
+                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Middle, mx, my);
                 } else if ((int)wParam == WinAPI.WM_LBUTTONUP) {
                     mButtons &= ~MouseButtons.Left;
                     gotHandled = handleEvent(The().MouseUp, MouseButtons.Left, mx, my);
                 } else if ((int)wParam == WinAPI.WM_RBUTTONUP) {
                     mButtons &= ~MouseButtons.Right;
                     gotHandled = handleEvent(The().MouseUp, MouseButtons.Right, mx, my);
+                } else if ((int)wParam == WinAPI.WM_MBUTTONUP) {
+                    mButtons &= ~MouseButtons.Middle;
+                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Middle, mx, my);
                 } else if ((int)wParam == WinAPI.WM_MOUSEMOVE) {
                     gotHandled = handleEvent(The().MouseMove, mButtons, mx, my);
                 }
