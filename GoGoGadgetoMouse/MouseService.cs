@@ -27,6 +27,8 @@ namespace GoGoGadgetoMouse {
             return mInstance ?? (mInstance = new MouseService());
         }
 
+        public bool Enabled { get; set; } = true;
+
         private MouseService() {
             MouseInterceptor.The().MouseMove += OnMouseMove;
             MouseInterceptor.The().MouseDown += OnMouseDown;
@@ -64,6 +66,8 @@ namespace GoGoGadgetoMouse {
         }
 
         private void OnMouseDown(object sender, MouseInterceptor.MouseEventArgs e) {
+            if (!Enabled) return;
+
             if (mAltKeyPressed && mCurrentState == State.None) {
                 var hwndMouseOver = WinAPI.WindowFromPoint(e.Location);
                 var topLevelHwnd = GetTopMostHwnd(hwndMouseOver);
@@ -107,6 +111,7 @@ namespace GoGoGadgetoMouse {
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e) {
+            if (!Enabled) return;
             if (e.KeyCode == Keys.LMenu) {
                 mAltKeyPressed = true;
             } else if (mAltKeyPressed && !mAltKeyUsed) {

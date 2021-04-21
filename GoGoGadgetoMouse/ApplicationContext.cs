@@ -13,6 +13,7 @@ namespace GoGoGadgetoMouse {
             mTrayIcon = new NotifyIcon() {
                 Icon = Resources.MouseIcon,
                 ContextMenu = new ContextMenu(new MenuItem[] {
+                    new MenuItem("Disable", Disable),
                     new MenuItem("Settings", Settings),
                     new MenuItem("Exit", Exit)
                 }),
@@ -20,6 +21,11 @@ namespace GoGoGadgetoMouse {
             };
 
             mTrayIcon.DoubleClick += (o, e) => Settings(o, e);
+        }
+
+        void Disable(object sender, EventArgs e) {
+            mMouseService.Enabled = !mMouseService.Enabled;
+            ((MenuItem)sender).Text = mMouseService.Enabled ? "Disable" : "Enable";
         }
 
         void Settings(object sender, EventArgs e) {
