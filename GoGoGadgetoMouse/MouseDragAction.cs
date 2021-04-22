@@ -15,6 +15,11 @@ namespace GoGoGadgetoMouse {
             mHwnd = hwnd;
             mInitialMousePosition = initialMousePosition;
 
+            var windowPlacement = WinAPI.GetPlacement(hwnd);
+            if (windowPlacement == WinAPI.ShowWindowCommands.SW_MAXIMIZE) {
+                WinAPI.ShowWindow(hwnd, WinAPI.ShowWindowCommands.SW_RESTORE);
+            }
+
             if (!WinAPI.GetWindowRect(hwnd, out var windowRect)) {
                 throw new InvalidOperationException(
                     $"Could not get window rect of window {hwnd}");

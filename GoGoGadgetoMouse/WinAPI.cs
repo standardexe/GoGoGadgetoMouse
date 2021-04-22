@@ -66,6 +66,48 @@ namespace GoGoGadgetoMouse {
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr GetFocus();
 
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowPlacement(
+            IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(
+            IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] ShowWindowCommands nCmdShow);
+
+        public enum ShowWindowCommands : uint {
+            SW_HIDE = 0,
+            SW_MAXIMIZE = 3,
+            SW_MINIMIZE = 6,
+            SW_RESTORE = 9,
+            SW_SHOW = 5,
+            SW_SHOWMAXIMIZED = 3,
+            SW_SHOWMINIMIZED = 2,
+            SW_SHOWMINNOACTIVE = 7,
+            SW_SHOWNA = 8,
+            SW_SHOWNOACTIVATE = 4,
+            SW_SHOWNORMAL = 1,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WINDOWPLACEMENT {
+            public int Length;
+            public int Flags;
+            public ShowWindowCommands ShowCmd;
+            public POINT MinPosition;
+            public POINT MaxPosition;
+            public RECT NormalPosition;
+
+            public static WINDOWPLACEMENT Default {
+                get {
+                    WINDOWPLACEMENT result = new WINDOWPLACEMENT();
+                    result.Length = Marshal.SizeOf(result);
+                    return result;
+                }
+            }
+        }
+
         public enum DpiAwareness {
             None = 0,
             SystemAware = 1,
@@ -173,6 +215,12 @@ namespace GoGoGadgetoMouse {
         public static bool IsWindowTopMost(IntPtr hWnd) {
             int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
             return (exStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
+        }
+
+        public static ShowWindowCommands GetPlacement(IntPtr hwnd) {
+            WINDOWPLACEMENT placement = WINDOWPLACEMENT.Default;
+            GetWindowPlacement(hwnd, ref placement);
+            return placement.ShowCmd;
         }
     }
 }
