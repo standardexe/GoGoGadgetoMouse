@@ -28,11 +28,15 @@ namespace GoGoGadgetoMouse {
             };
 
         private readonly Rectangle mInitialWindowRect;
+        private Rectangle mNewWindowRect;
+
         private readonly Point mInitialMousePosition;
         private readonly ResizeMode mResizeMode;
         private readonly IntPtr mHwnd;
 
         private readonly InvisibleWindow mInvisibleWindow;
+
+        private readonly Timer mUpdateTimer;
 
         public MouseResizeAction(IntPtr hwnd, Point initialMousePosition) {
             mInitialMousePosition = initialMousePosition;
@@ -49,6 +53,8 @@ namespace GoGoGadgetoMouse {
                 rect.Left, rect.Top,
                 rect.Right - rect.Left,
                 rect.Bottom - rect.Top);
+
+            mNewWindowRect = mInitialWindowRect;
 
             var normalizedMousePos = new PointF(
                 (initialMousePosition.X - mInitialWindowRect.X) / (float)mInitialWindowRect.Width,
@@ -76,6 +82,21 @@ namespace GoGoGadgetoMouse {
             mInvisibleWindow.Show();
             mInvisibleWindow.CenterAt(initialMousePosition);
             mInvisibleWindow.Cursor = Cursors[mResizeMode];
+
+            mUpdateTimer = new Timer();
+            mUpdateTimer.Interval = 100;
+            mUpdateTimer.Tick += UpdateTimer_Tick;
+            mUpdateTimer.Start();
+        }
+
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+            WinAPI.SetWindowPos(mHwnd, 0,
+                mNewWindowRect.X,
+                mNewWindowRect.Y,
+                mNewWindowRect.Width,
+                mNewWindowRect.Height,
+                WinAPI.SWP_NOZORDER);
         }
 
         public void Update(Point currentMousePosition) {
@@ -84,60 +105,58 @@ namespace GoGoGadgetoMouse {
             var deltaX = currentMousePosition.X - mInitialMousePosition.X;
             var deltaY = currentMousePosition.Y - mInitialMousePosition.Y;
 
-            Rectangle newWindowRect;
-
             switch (mResizeMode) {
                 case ResizeMode.Left:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left + deltaX, 
                         mInitialWindowRect.Top, 
                         mInitialWindowRect.Width - deltaX, 
                         mInitialWindowRect.Height);
                     break;
                 case ResizeMode.Top:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left,
                         mInitialWindowRect.Top + deltaY,
                         mInitialWindowRect.Width,
                         mInitialWindowRect.Height - deltaY);
                     break;
                 case ResizeMode.Right:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left,
                         mInitialWindowRect.Top,
                         mInitialWindowRect.Width + deltaX,
                         mInitialWindowRect.Height);
                     break;
                 case ResizeMode.Bottom:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left,
                         mInitialWindowRect.Top,
                         mInitialWindowRect.Width,
                         mInitialWindowRect.Height + deltaY);
                     break;
                 case ResizeMode.TopLeft:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left + deltaX,
                         mInitialWindowRect.Top + deltaY,
                         mInitialWindowRect.Width - deltaX,
                         mInitialWindowRect.Height - deltaY);
                     break;
                 case ResizeMode.TopRight:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left,
                         mInitialWindowRect.Top + deltaY,
                         mInitialWindowRect.Width + deltaX,
                         mInitialWindowRect.Height - deltaY);
                     break;
                 case ResizeMode.BottomLeft:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left + deltaX,
                         mInitialWindowRect.Top,
                         mInitialWindowRect.Width - deltaX,
                         mInitialWindowRect.Height + deltaY);
                     break;
                 case ResizeMode.BottomRight:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left,
                         mInitialWindowRect.Top,
                         mInitialWindowRect.Width + deltaX,
@@ -145,24 +164,19 @@ namespace GoGoGadgetoMouse {
                     break;
                 case ResizeMode.All:
                 default:
-                    newWindowRect = new Rectangle(
+                    mNewWindowRect = new Rectangle(
                         mInitialWindowRect.Left - deltaX,
                         mInitialWindowRect.Top - deltaY,
                         mInitialWindowRect.Width + 2*deltaX,
                         mInitialWindowRect.Height + 2*deltaY);
                     break;
             }
-
-            WinAPI.SetWindowPos(mHwnd, 0,
-                newWindowRect.X,
-                newWindowRect.Y,
-                newWindowRect.Width,
-                newWindowRect.Height,
-                WinAPI.SWP_NOZORDER);
         }
 
         public void Finish(Point currentMousePosition) {
+            mUpdateTimer.Stop();
             mInvisibleWindow.Hide();
+            UpdateTimer_Tick(null, null);
         }
     }
 }
