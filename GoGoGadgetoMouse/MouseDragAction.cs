@@ -6,10 +6,15 @@ using System.Windows.Forms;
 
 namespace GoGoGadgetoMouse {
     class MouseDragAction {
+        enum Side {
+            Left, Right, Top, Bottom, None
+        }
+
         private readonly IntPtr mHwnd;
         private readonly Point mInitialWindowPosition;
         private readonly Point mInitialMousePosition;
         private readonly InvisibleWindow mInvisibleWindow;
+        private readonly SnapRectangle mSnapRectangle;
 
         public MouseDragAction(IntPtr hwnd, Point initialMousePosition) {
             mHwnd = hwnd;
@@ -31,6 +36,10 @@ namespace GoGoGadgetoMouse {
             mInvisibleWindow.Show();
             mInvisibleWindow.CenterAt(initialMousePosition);
             mInvisibleWindow.Cursor = Cursors.Hand;
+
+            mSnapRectangle = new SnapRectangle() {
+                Visible = false
+            };
         }
 
         public void Update(Point currentMousePosition) {
@@ -42,11 +51,107 @@ namespace GoGoGadgetoMouse {
                 mInitialWindowPosition.Y + deltaY,
                 0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER);
 
+            var nearestSide = GetNearestSide(currentMousePosition);
+            switch (nearestSide.Side) {
+                case Side.Left:
+                    mSnapRectangle.Location = nearestSide.screen.WorkingArea.Location;
+                    mSnapRectangle.Width = nearestSide.screen.WorkingArea.Width / 2;
+                    mSnapRectangle.Height = nearestSide.screen.WorkingArea.Height;
+                    mSnapRectangle.Show();
+                    break;
+                case Side.Right:
+                    mSnapRectangle.Location = nearestSide.screen.WorkingArea.Location.Add(
+                        nearestSide.screen.WorkingArea.Width / 2, 0);
+                    mSnapRectangle.Width = nearestSide.screen.WorkingArea.Width / 2;
+                    mSnapRectangle.Height = nearestSide.screen.WorkingArea.Height;
+                    mSnapRectangle.Show();
+                    break;
+                case Side.Top:
+                    mSnapRectangle.Location = nearestSide.screen.WorkingArea.Location;
+                    mSnapRectangle.Width = nearestSide.screen.WorkingArea.Width;
+                    mSnapRectangle.Height = nearestSide.screen.WorkingArea.Height / 2;
+                    mSnapRectangle.Show();
+                    break;
+                case Side.Bottom:
+                    mSnapRectangle.Location = nearestSide.screen.WorkingArea.Location.Add(
+                        0, nearestSide.screen.WorkingArea.Height / 2);
+                    mSnapRectangle.Width = nearestSide.screen.WorkingArea.Width;
+                    mSnapRectangle.Height = nearestSide.screen.WorkingArea.Height / 2;
+                    mSnapRectangle.Show();
+                    break;
+                case Side.None:
+                    mSnapRectangle.Hide();
+                    break;
+            }
+
             mInvisibleWindow.CenterAt(currentMousePosition);
         }
 
+        static (Side Side, Screen screen, int Distance) GetNearestSide(Point currentMousePosition) {
+            var screen = Screen.FromPoint(currentMousePosition.Add(-1, -1));
+
+            var distToLeft = Math.Abs(screen.Bounds.Left - currentMousePosition.X);
+            var distToRight = Math.Abs(screen.Bounds.Right - currentMousePosition.X);
+            var distToTop = Math.Abs(screen.Bounds.Top - currentMousePosition.Y);
+            var distToBottom = Math.Abs(screen.Bounds.Bottom - currentMousePosition.Y);
+
+            var nearestToBorder = new[] {
+                (Side: Side.Left,   Distance: distToLeft),
+                (Side: Side.Right,  Distance: distToRight),
+                (Side: Side.Top,    Distance: distToTop),
+                (Side: Side.Bottom, Distance: distToBottom)
+            }.OrderBy(x => x.Distance)
+             .First();
+
+            if (nearestToBorder.Distance > 10) {
+                nearestToBorder.Side = Side.None;
+            }
+
+            return (nearestToBorder.Side, screen, nearestToBorder.Distance);
+        }
+
         public void Finish(Point currentMousePosition) {
+            var nearestToBorder = GetNearestSide(currentMousePosition);
+
+            switch (nearestToBorder.Side) {
+                case Side.Left:
+                    WinAPI.SetWindowPos(mHwnd, 0,
+                        nearestToBorder.screen.WorkingArea.X,
+                        nearestToBorder.screen.WorkingArea.Y,
+                        nearestToBorder.screen.WorkingArea.Width / 2,
+                        nearestToBorder.screen.WorkingArea.Height,
+                        WinAPI.SWP_NOZORDER);
+                    break;
+                case Side.Right:
+                    WinAPI.SetWindowPos(mHwnd, 0,
+                        nearestToBorder.screen.WorkingArea.X
+                            + nearestToBorder.screen.WorkingArea.Width / 2,
+                        nearestToBorder.screen.WorkingArea.Y,
+                        nearestToBorder.screen.WorkingArea.Width / 2,
+                        nearestToBorder.screen.WorkingArea.Height,
+                        WinAPI.SWP_NOZORDER);
+                    break;
+                case Side.Top:
+                    WinAPI.SetWindowPos(mHwnd, 0,
+                        nearestToBorder.screen.WorkingArea.X,
+                        nearestToBorder.screen.WorkingArea.Y,
+                        nearestToBorder.screen.WorkingArea.Width,
+                        nearestToBorder.screen.WorkingArea.Height / 2,
+                        WinAPI.SWP_NOZORDER);
+                    break;
+                case Side.Bottom:
+                    WinAPI.SetWindowPos(mHwnd, 0,
+                        nearestToBorder.screen.WorkingArea.X,
+                        nearestToBorder.screen.WorkingArea.Y
+                            + nearestToBorder.screen.WorkingArea.Height / 2,
+                        nearestToBorder.screen.WorkingArea.Width,
+                        nearestToBorder.screen.WorkingArea.Height / 2,
+                        WinAPI.SWP_NOZORDER);
+                    break;
+            }
+
             mInvisibleWindow.Hide();
+            mSnapRectangle.Hide();
         }
     }
 }

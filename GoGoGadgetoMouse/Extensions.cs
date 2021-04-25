@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,10 @@ namespace GoGoGadgetoMouse {
                 kvp = default;
                 return false;
             }
+        }
+
+        public static Point Add(this Point pt, int dx, int dy) {
+            return new Point(pt.X + dx, pt.Y + dy);
         }
     }
 }
