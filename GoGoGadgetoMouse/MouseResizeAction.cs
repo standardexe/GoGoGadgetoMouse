@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GoGoGadgetoMouse {
@@ -16,27 +13,25 @@ namespace GoGoGadgetoMouse {
 
         public static readonly Dictionary<ResizeMode, Cursor> Cursors
             = new Dictionary<ResizeMode, Cursor> {
-                [ResizeMode.All] = System.Windows.Forms.Cursors.SizeAll,
-                [ResizeMode.Left] = System.Windows.Forms.Cursors.SizeWE,
-                [ResizeMode.Right] = System.Windows.Forms.Cursors.SizeWE,
-                [ResizeMode.Top] = System.Windows.Forms.Cursors.SizeNS,
-                [ResizeMode.Bottom] = System.Windows.Forms.Cursors.SizeNS,
-                [ResizeMode.TopLeft] = System.Windows.Forms.Cursors.SizeNWSE,
+                [ResizeMode.All]         = System.Windows.Forms.Cursors.SizeAll,
+                [ResizeMode.Top]         = System.Windows.Forms.Cursors.SizeNS,
+                [ResizeMode.Left]        = System.Windows.Forms.Cursors.SizeWE,
+                [ResizeMode.Right]       = System.Windows.Forms.Cursors.SizeWE,
+                [ResizeMode.Bottom]      = System.Windows.Forms.Cursors.SizeNS,
+                [ResizeMode.TopLeft]     = System.Windows.Forms.Cursors.SizeNWSE,
+                [ResizeMode.TopRight]    = System.Windows.Forms.Cursors.SizeNESW,
+                [ResizeMode.BottomLeft]  = System.Windows.Forms.Cursors.SizeNESW,
                 [ResizeMode.BottomRight] = System.Windows.Forms.Cursors.SizeNWSE,
-                [ResizeMode.TopRight] = System.Windows.Forms.Cursors.SizeNESW,
-                [ResizeMode.BottomLeft] = System.Windows.Forms.Cursors.SizeNESW,
             };
 
+        private readonly InvisibleWindow mInvisibleWindow;
         private readonly Rectangle mInitialWindowRect;
-        private Rectangle mNewWindowRect;
-
         private readonly Point mInitialMousePosition;
         private readonly ResizeMode mResizeMode;
+        private readonly Timer mUpdateTimer;
         private readonly IntPtr mHwnd;
 
-        private readonly InvisibleWindow mInvisibleWindow;
-
-        private readonly Timer mUpdateTimer;
+        private Rectangle mNewWindowRect;
 
         public MouseResizeAction(IntPtr hwnd, Point initialMousePosition) {
             mInitialMousePosition = initialMousePosition;
@@ -49,27 +44,27 @@ namespace GoGoGadgetoMouse {
             var cornerSize = Properties.Settings.Default.sideWidth / 2;
             var sideSize = cornerSize;
 
-            mInitialWindowRect = new Rectangle(
-                rect.Left, rect.Top,
-                rect.Right - rect.Left,
-                rect.Bottom - rect.Top);
-
-            mNewWindowRect = mInitialWindowRect;
+            mInitialWindowRect = mNewWindowRect =
+                new Rectangle(rect.Left, rect.Top,
+                              rect.Right - rect.Left,
+                              rect.Bottom - rect.Top);
 
             var normalizedMousePos = new PointF(
-                (initialMousePosition.X - mInitialWindowRect.X) / (float)mInitialWindowRect.Width,
-                (initialMousePosition.Y - mInitialWindowRect.Y) / (float)mInitialWindowRect.Height);
+                (initialMousePosition.X - mInitialWindowRect.X)
+                    / (float)mInitialWindowRect.Width,
+                (initialMousePosition.Y - mInitialWindowRect.Y)
+                    / (float)mInitialWindowRect.Height);
 
             var areas = new Dictionary<ResizeMode, RectangleF> {
-                [ResizeMode.TopLeft] = new RectangleF(0, 0, cornerSize, cornerSize),
-                [ResizeMode.TopRight] = new RectangleF(1 - cornerSize, 0, cornerSize, cornerSize),
-                [ResizeMode.BottomLeft] = new RectangleF(0, 1 - cornerSize, cornerSize, cornerSize),
+                [ResizeMode.TopLeft]     = new RectangleF(0, 0, cornerSize, cornerSize),
+                [ResizeMode.TopRight]    = new RectangleF(1 - cornerSize, 0, cornerSize, cornerSize),
+                [ResizeMode.BottomLeft]  = new RectangleF(0, 1 - cornerSize, cornerSize, cornerSize),
                 [ResizeMode.BottomRight] = new RectangleF(1 - cornerSize, 1 - cornerSize, cornerSize, cornerSize),
 
-                [ResizeMode.Left] = new RectangleF(0, 0, sideSize, 1),
-                [ResizeMode.Top] = new RectangleF(0, 0, 1, sideSize),
-                [ResizeMode.Right] = new RectangleF(1 - sideSize, 0, sideSize, 1),
-                [ResizeMode.Bottom] = new RectangleF(0, 1 - sideSize, 1, sideSize),
+                [ResizeMode.Top]         = new RectangleF(0, 0, 1, sideSize),
+                [ResizeMode.Left]        = new RectangleF(0, 0, sideSize, 1),
+                [ResizeMode.Right]       = new RectangleF(1 - sideSize, 0, sideSize, 1),
+                [ResizeMode.Bottom]      = new RectangleF(0, 1 - sideSize, 1, sideSize),
             };
 
             if (areas.TryFirstOrDefault(kvp => kvp.Value.Contains(normalizedMousePos), out var areaKvp)) {
@@ -79,9 +74,9 @@ namespace GoGoGadgetoMouse {
             }
 
             mInvisibleWindow = new InvisibleWindow();
-            mInvisibleWindow.Show();
             mInvisibleWindow.CenterAt(initialMousePosition);
             mInvisibleWindow.Cursor = Cursors[mResizeMode];
+            mInvisibleWindow.Show();
 
             mUpdateTimer = new Timer();
             mUpdateTimer.Interval = 100;
@@ -89,8 +84,7 @@ namespace GoGoGadgetoMouse {
             mUpdateTimer.Start();
         }
 
-        private void UpdateTimer_Tick(object sender, EventArgs e)
-        {
+        private void UpdateTimer_Tick(object sender, EventArgs e) {
             WinAPI.SetWindowPos(mHwnd, 0,
                 mNewWindowRect.X,
                 mNewWindowRect.Y,
