@@ -21,6 +21,7 @@ namespace GoGoGadgetoMouse {
         private State mCurrentState;
         private MouseDragAction mDragAction;
         private MouseResizeAction mResizeAction;
+        private VolumeChangeAction mVolumeChangeAction;
         private WindowsInput.InputSimulator inputSim = new WindowsInput.InputSimulator();
 
         public static MouseService The() {
@@ -30,11 +31,21 @@ namespace GoGoGadgetoMouse {
         public bool Enabled { get; set; } = true;
 
         private MouseService() {
+            MouseInterceptor.The().MouseWheel += OnMouseWheel;
             MouseInterceptor.The().MouseMove += OnMouseMove;
             MouseInterceptor.The().MouseDown += OnMouseDown;
             MouseInterceptor.The().MouseUp += OnMouseUp;
             KeyInterceptor.The().KeyDown += OnKeyDown;
             KeyInterceptor.The().KeyUp += OnKeyUp;
+
+            mVolumeChangeAction = new VolumeChangeAction();
+        }
+
+        private void OnMouseWheel(object sender, MouseInterceptor.MouseEventArgs e) {
+            if (mAltKeyPressed) {
+                mVolumeChangeAction?.Update(e);
+                e.Handled = true;
+            }
         }
 
         private void OnMouseMove(object sender, MouseInterceptor.MouseEventArgs e) {

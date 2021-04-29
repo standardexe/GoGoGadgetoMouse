@@ -10,12 +10,13 @@ using System.Windows.Forms;
 namespace GoGoGadgetoMouse {
     class MouseInterceptor {
         public class MouseEventArgs : System.Windows.Forms.MouseEventArgs {
-            public MouseEventArgs(MouseButtons buttons, int x, int y) 
-                : base(buttons, 1, x, y, 0) { }
+            public MouseEventArgs(MouseButtons buttons, int x, int y, int delta) 
+                : base(buttons, 1, x, y, delta) { }
 
             public bool Handled { get; set; } = false;
         }
 
+        public event EventHandler<MouseEventArgs> MouseWheel;
         public event EventHandler<MouseEventArgs> MouseMove;
         public event EventHandler<MouseEventArgs> MouseDown;
         public event EventHandler<MouseEventArgs> MouseUp;
@@ -47,9 +48,9 @@ namespace GoGoGadgetoMouse {
         }
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
-            Func<EventHandler<MouseEventArgs>, MouseButtons, int, int, bool> handleEvent
-                = (handler, buttons, x, y) => {
-                var ev = new MouseEventArgs(buttons, x, y);
+            Func<EventHandler<MouseEventArgs>, MouseButtons, int, int, int, bool> handleEvent
+                = (handler, buttons, x, y, delta) => {
+                var ev = new MouseEventArgs(buttons, x, y, delta);
                 handler?.Invoke(The(), ev);
                 return ev.Handled;
             };
@@ -62,24 +63,28 @@ namespace GoGoGadgetoMouse {
 
                 if ((int)wParam == WinAPI.WM_LBUTTONDOWN) {
                     mButtons |= MouseButtons.Left;
-                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Left, mx, my);
+                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Left, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_RBUTTONDOWN) {
                     mButtons |= MouseButtons.Right;
-                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Right, mx, my);
+                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Right, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_MBUTTONDOWN) {
                     mButtons |= MouseButtons.Middle;
-                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Middle, mx, my);
+                    gotHandled = handleEvent(The().MouseDown, MouseButtons.Middle, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_LBUTTONUP) {
                     mButtons &= ~MouseButtons.Left;
-                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Left, mx, my);
+                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Left, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_RBUTTONUP) {
                     mButtons &= ~MouseButtons.Right;
-                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Right, mx, my);
+                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Right, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_MBUTTONUP) {
                     mButtons &= ~MouseButtons.Middle;
-                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Middle, mx, my);
+                    gotHandled = handleEvent(The().MouseUp, MouseButtons.Middle, mx, my, 0);
                 } else if ((int)wParam == WinAPI.WM_MOUSEMOVE) {
-                    gotHandled = handleEvent(The().MouseMove, mButtons, mx, my);
+                    gotHandled = handleEvent(The().MouseMove, mButtons, mx, my, 0);
+                } else if (((int)wParam & 0xFFFF) == WinAPI.WM_MOUSEWHEEL) {
+                    int mouseData = Marshal.ReadInt32(lParam + 8);
+                    gotHandled = handleEvent(The().MouseWheel, mButtons, mx, my, mouseData >> 16);
+
                 }
             }
 

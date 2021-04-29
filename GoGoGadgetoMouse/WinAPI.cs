@@ -76,6 +76,10 @@ namespace GoGoGadgetoMouse {
         public static extern bool ShowWindow(
             IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] ShowWindowCommands nCmdShow);
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessageW(IntPtr hWnd, int Msg,
+            IntPtr wParam, IntPtr lParam);
+
         public enum ShowWindowCommands : uint {
             SW_HIDE = 0,
             SW_MAXIMIZE = 3,
@@ -172,6 +176,7 @@ namespace GoGoGadgetoMouse {
         public const int WM_RBUTTONUP = 0x0205;
         public const int WM_MBUTTONDOWN = 0x0207;
         public const int WM_MBUTTONUP = 0x0208;
+        public const int WM_MOUSEWHEEL = 0x020A;
 
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
@@ -181,6 +186,11 @@ namespace GoGoGadgetoMouse {
         public const int HWND_NOTOPMOST = -2;
 
         public const int GWL_STYLE = (-16);
+
+        public const int APPCOMMAND_VOLUME_MUTE = 0x80000;
+        public const int APPCOMMAND_VOLUME_UP = 0xA0000;
+        public const int APPCOMMAND_VOLUME_DOWN = 0x90000;
+        public const int WM_APPCOMMAND = 0x319;
 
         public static IntPtr GetTopLevelHwnd(IntPtr hwnd) {
             while (true) {
