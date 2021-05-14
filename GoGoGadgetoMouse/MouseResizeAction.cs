@@ -67,6 +67,8 @@ namespace GoGoGadgetoMouse {
                 [ResizeMode.Bottom]      = new RectangleF(0, 1 - sideSize, 1, sideSize),
             };
 
+            WinAPI.SendMessageW(hwnd, WinAPI.WM_ENTERSIZEMOVE, IntPtr.Zero, IntPtr.Zero);
+
             if (areas.TryFirstOrDefault(kvp => kvp.Value.Contains(normalizedMousePos), out var areaKvp)) {
                 mResizeMode = areaKvp.Key;
             } else {
@@ -79,18 +81,18 @@ namespace GoGoGadgetoMouse {
             mInvisibleWindow.Show();
 
             mUpdateTimer = new Timer();
-            mUpdateTimer.Interval = 100;
+            mUpdateTimer.Interval = 25;
             mUpdateTimer.Tick += UpdateTimer_Tick;
             mUpdateTimer.Start();
         }
 
         private void UpdateTimer_Tick(object sender, EventArgs e) {
-            WinAPI.SetWindowPos(mHwnd, 0,
+            WinAPI.MoveWindow(mHwnd,
                 mNewWindowRect.X,
                 mNewWindowRect.Y,
                 mNewWindowRect.Width,
                 mNewWindowRect.Height,
-                WinAPI.SWP_NOZORDER);
+                repaint: true);
         }
 
         public void Update(Point currentMousePosition) {
@@ -171,6 +173,7 @@ namespace GoGoGadgetoMouse {
             mUpdateTimer.Stop();
             mInvisibleWindow.Hide();
             UpdateTimer_Tick(null, null);
+            WinAPI.SendMessageW(mHwnd, WinAPI.WM_EXITSIZEMOVE, IntPtr.Zero, IntPtr.Zero);
         }
     }
 }

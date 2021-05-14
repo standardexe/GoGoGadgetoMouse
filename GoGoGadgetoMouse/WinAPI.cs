@@ -31,6 +31,10 @@ namespace GoGoGadgetoMouse {
         public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter,
             int x, int Y, int cx, int cy, int wFlags);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool MoveWindow(IntPtr hWnd, int x, int y,
+            int width, int height, bool repaint);
+
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetParent(IntPtr hWnd);
 
@@ -177,6 +181,9 @@ namespace GoGoGadgetoMouse {
         public const int WM_MBUTTONDOWN = 0x0207;
         public const int WM_MBUTTONUP = 0x0208;
         public const int WM_MOUSEWHEEL = 0x020A;
+
+        public const int WM_ENTERSIZEMOVE = 0x0231;
+        public const int WM_EXITSIZEMOVE = 0x0232;
 
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
